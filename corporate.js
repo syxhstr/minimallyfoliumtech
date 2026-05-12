@@ -34,25 +34,28 @@ animateScroll.forEach((el) => {
     });
 });
 
-// 4. Number Counter Animation
+// 4. Number Counter Animation (Placeholders)
 const counters = document.querySelectorAll('.counter');
-counters.forEach(counter => {
-    const updateCount = () => {
-        const target = +counter.getAttribute('data-target');
-        const count = +counter.innerText;
-        const speed = 200; 
-        const inc = target / speed;
+const options = { threshold: 0.5 };
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      updateCount(entry.target);
+    }
+  });
+}, options);
 
-        if (count < target) {
-            counter.innerText = Math.ceil(count + inc);
-            setTimeout(updateCount, 1);
-        } else {
-            counter.innerText = target + "+";
-        }
-    };
+function updateCount(counter) {
+    const target = +counter.getAttribute('data-target');
+    const count = +counter.innerText;
+    const speed = 200; 
+    const inc = target / speed;
 
-    ScrollTrigger.create({
-        trigger: counter,
-        onEnter: updateCount
-    });
-});
+    if (count < target) {
+        counter.innerText = Math.ceil(count + inc);
+        setTimeout(() => updateCount(counter), 1);
+    } else {
+        counter.innerText = target + "+";
+    }
+}
+counters.forEach(counter => { observer.observe(counter); });
